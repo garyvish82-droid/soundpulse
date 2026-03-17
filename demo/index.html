@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundPulse · UX Intelligence for SoundCloud</title>
+<style>
+  :root {
+    --sc-orange: #f50;
+    --sc-dark:   #111;
+    --bg:        #0d0d0d;
+    --surface:   #181818;
+    --surface2:  #222;
+    --border:    #2a2a2a;
+    --text:      #e8e8e8;
+    --muted:     #888;
+    --radius:    12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .topbar .logo { display: flex; align-items: center; gap: 10px; }
+  .topbar .logo svg { width: 28px; height: 28px; }
+  .topbar .logo span { font-weight: 700; font-size: 15px; letter-spacing: 0.3px; }
+  .topbar .logo .badge {
+    background: var(--sc-orange); color: #fff; font-size: 10px;
+    font-weight: 700; padding: 2px 7px; border-radius: 10px;
+    letter-spacing: 0.5px;
+  }
+  .topbar .actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #555; }
+  .btn-primary { background: var(--sc-orange); color: #fff; }
+  .btn-primary:hover { background: #ff6600; }
+
+  /* ── LAYOUT ── */
+  .layout { flex: 1; display: flex; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
+  .sidebar-btn {
+    width: 100%; text-align: left; background: transparent; border: none;
+    color: var(--text); font-size: 13px; padding: 8px 10px;
+    border-radius: 6px; cursor: pointer; transition: background 0.1s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-btn:hover { background: var(--surface2); }
+  .sidebar-btn .icon { width: 16px; opacity: 0.7; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #44cc44; flex-shrink: 0; }
+  .status-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 8px 10px; }
+
+  /* ── CHAT AREA ── */
+  .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .message { display: flex; gap: 12px; max-width: 760px; }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
+  .message .avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .message.agent .avatar { background: var(--sc-orange); color: #fff; }
+  .message.user  .avatar { background: #333; color: var(--text); }
+  .message .bubble {
+    padding: 12px 16px; border-radius: var(--radius);
+    font-size: 14px; line-height: 1.65;
+  }
+  .message.agent .bubble { background: var(--surface); border: 1px solid var(--border); }
+  .message.user  .bubble { background: #1c2f1c; border: 1px solid #2a4a2a; }
+
+  .insight-block {
+    background: var(--surface2); border-left: 3px solid var(--sc-orange);
+    border-radius: 8px; padding: 14px 16px; margin: 8px 0; font-size: 13px;
+  }
+  .insight-block .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--sc-orange); margin-bottom: 6px; font-weight: 700; }
+  .insight-block .text { color: #ccc; line-height: 1.6; }
+  .insight-block .rec { color: #aadaaa; margin-top: 8px; font-size: 12px; }
+
+  .score-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; }
+  .score-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; text-align: center; min-width: 90px;
+  }
+  .score-chip .num { font-size: 22px; font-weight: 800; color: var(--sc-orange); }
+  .score-chip .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── INPUT ── */
+  .input-area {
+    padding: 16px 24px 20px; border-top: 1px solid var(--border);
+    background: var(--surface); flex-shrink: 0;
+  }
+  .input-wrap { display: flex; gap: 10px; align-items: flex-end; }
+  .input-field {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px;
+    color: var(--text); font-size: 14px; resize: none;
+    outline: none; font-family: inherit; min-height: 44px; max-height: 120px;
+    transition: border-color 0.15s;
+  }
+  .input-field:focus { border-color: var(--sc-orange); }
+  .input-field::placeholder { color: var(--muted); }
+  .send-btn {
+    width: 44px; height: 44px; border-radius: 10px; border: none;
+    background: var(--sc-orange); color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.15s;
+  }
+  .send-btn:hover { background: #ff6600; }
+  .send-btn:disabled { background: #444; cursor: not-allowed; }
+
+  .suggested-queries { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .suggest-chip {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; padding: 5px 12px;
+    border-radius: 20px; cursor: pointer; transition: all 0.15s; font-family: inherit;
+  }
+  .suggest-chip:hover { border-color: var(--sc-orange); color: var(--sc-orange); }
+
+  /* ── TYPING INDICATOR ── */
+  .typing { display: flex; align-items: center; gap: 5px; padding: 12px 16px; }
+  .typing span { width: 6px; height: 6px; background: var(--sc-orange); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-6px); opacity: 1; } }
+
+  /* ── REPORT BUTTON ── */
+  .report-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #f50, #ff7700);
+    color: #fff; padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; margin-top: 10px; transition: opacity 0.15s;
+    font-family: inherit;
+  }
+  .report-cta:hover { opacity: 0.9; }
+
+  /* ── ERROR TOAST ── */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: #cc2222; color: #fff; padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 100; display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#f50"/>
+      <circle cx="50" cy="50" r="18" fill="white" opacity="0.95"/>
+      <circle cx="50" cy="50" r="9" fill="#f50"/>
+      <path d="M22 50 Q28 28 34 50 Q40 72 46 50" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M54 50 Q60 28 66 50 Q72 72 78 50" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span>SoundPulse</span>
+    <span class="badge">BETA</span>
+  </div>
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="clearChat()">Clear</button>
+    <button class="btn btn-primary" onclick="generateReport()">Export Report</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h3>Status</h3>
+      <div class="status-row"><div class="status-dot"></div> MCP Server Connected</div>
+      <div class="status-row" style="color:#666">● Supabase: Live</div>
+      <div class="status-row" style="color:#666">● SoundCloud API: Active</div>
+    </div>
+    <div class="sidebar-section">
+      <h3>Analysis Tools</h3>
+      <button class="sidebar-btn" onclick="sendQuery('Show me the top 10 tracks by plays this month')">
+        <span class="icon">📊</span> Track Analytics
+      </button>
+      <button class="sidebar-btn" onclick="sendQuery('Which tracks have the worst listener retention and why?')">
+        <span class="icon">📉</span> Retention Analysis
+      </button>
+      <button class="sidebar-btn" onclick="sendQuery('What are the biggest discovery gaps on the platform right now?')">
+        <span class="icon">🔍</span> Discovery Gaps
+      </button>
+      <button class="sidebar-btn" onclick="sendQuery('Who are the top creators by engagement score and what makes them successful?')">
+        <span class="icon">💬</span> Creator Feedback
+      </button>
+      <button class="sidebar-btn" onclick="sendQuery('Compare session depth across casual, engaged and power users')">
+        <span class="icon">🎯</span> Session Depth
+      </button>
+    </div>
+    <div class="sidebar-section" style="flex:1">
+      <h3>Reports</h3>
+      <button class="sidebar-btn" onclick="generateReport()">
+        <span class="icon">📄</span> Generate Full Report
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+
+      <!-- Welcome message -->
+      <div class="message agent">
+        <div class="avatar">SC</div>
+        <div class="bubble">
+          <strong>SoundPulse is ready.</strong><br><br>
+          I have access to 8 analytical tools covering listener retention, discovery gaps,
+          creator feedback loops, and session depth. I can also generate stakeholder reports.<br><br>
+          <strong>Try asking:</strong>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+            <span style="color:#aaa; font-size:13px">→ "Where are we losing listeners on hip-hop tracks?"</span>
+            <span style="color:#aaa; font-size:13px">→ "What's our biggest search-to-play gap?"</span>
+            <span style="color:#aaa; font-size:13px">→ "Which creator has the strongest community?"</span>
+            <span style="color:#aaa; font-size:13px">→ "Generate a UX report for this week's review"</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          class="input-field"
+          id="inputField"
+          placeholder="Ask SoundPulse anything about your SoundCloud data..."
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="suggested-queries">
+        <button class="suggest-chip" onclick="sendQuery(this.textContent)">Worst retention tracks?</button>
+        <button class="suggest-chip" onclick="sendQuery(this.textContent)">Top discovery gaps</button>
+        <button class="suggest-chip" onclick="sendQuery(this.textContent)">Creator engagement scores</button>
+        <button class="suggest-chip" onclick="sendQuery(this.textContent)">Power user session depth</button>
+        <button class="suggest-chip" onclick="sendQuery(this.textContent)">Hip-hop vs Electronic retention</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = window.location.origin;
+let isLoading = false;
+
+// ── Demo mode: synthetic responses when backend is not connected ──
+const DEMO_MODE = true;
+
+const DEMO_RESPONSES = {
+  default: {
+    text: `I analyzed the data and found several key patterns:`,
+    insights: [
+      {
+        label: "🎵 RETENTION",
+        text: '"Late Night Freestyle" by Verse Craft loses 58% of listeners in the first 30 seconds — a classic intro-friction problem. The opening 8-bar acapella section is too long before the beat drops.',
+        rec: "→ Recommendation: Create an edit version that starts with the hook at 0:28. Expected +22% avg completion."
+      },
+      {
+        label: "🔍 DISCOVERY GAP",
+        text: '"new york drill 2024" has a critical gap score of 82/100. Users search but only 5% of shown results get played — they\'re expecting drill content but getting generic hip-hop.',
+        rec: "→ Recommendation: Audit genre tagging for drill tracks. Add 'Drill' as a filter chip on this search query."
+      },
+      {
+        label: "💬 FEEDBACK LOOP",
+        text: 'LoFi Brewer leads with an engagement score of 96.8/100 — their timed comment community is uniquely active, with listeners marking emotional moments in the track.',
+        rec: "→ Recommendation: Feature them in creator spotlights. Use their engagement pattern as a model for other ambient/lo-fi creators."
+      }
+    ],
+    scores: [
+      { num: "74.2", lbl: "Avg Retention" },
+      { num: "12", lbl: "Gaps Found" },
+      { num: "81.3", lbl: "Top Creator Score" }
+    ]
+  },
+  retention: {
+    text: "Here's the retention analysis across your top tracks:",
+    insights: [
+      {
+        label: "🔴 CRITICAL DROP",
+        text: '"Late Night Freestyle" (Hip-hop): 58% of listeners drop in first 10% of track. Drop rate 12x higher than genre average. The intro is killing the experience.',
+        rec: "→ Fix: Start with beat. Expected completion rate increase: +22%"
+      },
+      {
+        label: "🟡 MID-TRACK DROP",
+        text: '"Ibiza Calling" (House): Strong retention to 60% mark (95%), then cliff drop to 43%. The 6-minute outro is causing abandonment at the 14-minute mark.',
+        rec: "→ Fix: Fade out at 14min or add energy spike. Current avg completion: 37%. Target: 65%"
+      },
+      {
+        label: "🟢 STRONG PERFORMER",
+        text: '"Midnight Protocol" (Electronic): Retention score 78/100. Smooth curve, no critical drops. Completion rate 65% — top 15% of platform.',
+        rec: "→ Action: Analyze structure as template for other Electronic creators."
+      }
+    ],
+    scores: [
+      { num: "65%", lbl: "Avg Completion" },
+      { num: "3", lbl: "Critical Drops" },
+      { num: "78", lbl: "Best Score" }
+    ]
+  },
+  discovery: {
+    text: "These are your highest-impact discovery gaps right now:",
+    insights: [
+      {
+        label: "🔴 CRITICAL GAP — Score 82",
+        text: '"new york drill 2024": Only 5% play rate, 22% avg completion. Genre mismatch: users expect Drill, get generic Hip-hop. High search intent, zero satisfaction.',
+        rec: "→ Immediate: Audit top 20 results. Add Drill filter chip. Content gap check needed."
+      },
+      {
+        label: "🟡 SIGNIFICANT GAP — Score 71",
+        text: '"afrobeats workout 2024": 15% play rate, 19% completion. Users expect Afro House, served Hip-hop. High growth search term with weak catalog depth.',
+        rec: "→ Creator acquisition: Partner with 3-5 Afrobeats creators to fill this content gap."
+      },
+      {
+        label: "🟢 QUICK WIN — Score 58",
+        text: '"singer songwriter guitar": Low play rate (5%) but when users do play, completion drops to 24%. Thumbnail quality and waveform previews are missing for most results.',
+        rec: "→ Quick win: Enforce waveform preview requirement for Indie/Folk genre uploads."
+      }
+    ],
+    scores: [
+      { num: "20", lbl: "Gaps Analyzed" },
+      { num: "82", lbl: "Highest Gap Score" },
+      { num: "4", lbl: "Genre Mismatches" }
+    ]
+  }
+};
+
+function getResponse(query) {
+  const q = query.toLowerCase();
+  if (q.includes('retention') || q.includes('drop') || q.includes('completion')) {
+    return DEMO_RESPONSES.retention;
+  }
+  if (q.includes('discover') || q.includes('search') || q.includes('gap')) {
+    return DEMO_RESPONSES.discovery;
+  }
+  return DEMO_RESPONSES.default;
+}
+
+function buildInsightHTML(resp) {
+  let html = `<p>${resp.text}</p>`;
+  if (resp.scores) {
+    html += `<div class="score-row">`;
+    for (const s of resp.scores) {
+      html += `<div class="score-chip"><div class="num">${s.num}</div><div class="lbl">${s.lbl}</div></div>`;
+    }
+    html += `</div>`;
+  }
+  if (resp.insights) {
+    for (const ins of resp.insights) {
+      html += `<div class="insight-block">
+        <div class="label">${ins.label}</div>
+        <div class="text">${ins.text}</div>
+        <div class="rec">${ins.rec}</div>
+      </div>`;
+    }
+  }
+  return html;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('inputField');
+  const query = input.value.trim();
+  if (!query || isLoading) return;
+
+  input.value = '';
+  autoResize(input);
+  addMessage('user', query);
+  showTyping();
+  setLoading(true);
+
+  // Simulate agent thinking time
+  const delay = 1200 + Math.random() * 800;
+
+  if (DEMO_MODE) {
+    setTimeout(() => {
+      hideTyping();
+      const resp = getResponse(query);
+      const html = buildInsightHTML(resp);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message agent';
+      bubble.innerHTML = `
+        <div class="avatar">SC</div>
+        <div class="bubble">${html}
+          <button class="report-cta" onclick="generateReport()">
+            📄 Export as Stakeholder Report
+          </button>
+        </div>`;
+      document.getElementById('messages').appendChild(bubble);
+      bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      setLoading(false);
+    }, delay);
+  } else {
+    // Real backend call
+    try {
+      const res = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: query })
+      });
+      const data = await res.json();
+      hideTyping();
+      addAgentMessage(data.response || data.text || JSON.stringify(data));
+    } catch (e) {
+      hideTyping();
+      addAgentMessage('⚠️ Could not reach backend. Running in demo mode.');
+    }
+    setLoading(false);
+  }
+}
+
+async function generateReport() {
+  addMessage('user', 'Generate the full UX insight report for this week');
+  showTyping();
+  setLoading(true);
+
+  setTimeout(() => {
+    hideTyping();
+    const html = `<p>✅ <strong>Full UX Insight Report generated.</strong></p>
+    <div class="insight-block">
+      <div class="label">📊 REPORT SUMMARY</div>
+      <div class="text">Analysis of 21 tracks and 200 user sessions over the last 30 days.
+      3 critical retention issues identified, 12 discovery gaps found (4 genre mismatches),
+      and 8 creator feedback profiles analyzed.</div>
+    </div>
+    <div class="score-row">
+      <div class="score-chip"><div class="num">21</div><div class="lbl">Tracks</div></div>
+      <div class="score-chip"><div class="num">12</div><div class="lbl">Gaps</div></div>
+      <div class="score-chip"><div class="num">3</div><div class="lbl">Priority Fixes</div></div>
+    </div>
+    <p style="margin-top:12px; font-size:13px; color:#aaa">
+      Top recommendations:<br>
+      1. Rework intros on 3 hip-hop tracks with >50% early drop rate<br>
+      2. Fix drill/hip-hop search misclassification (affects 15k monthly searches)<br>
+      3. Activate timed-comment prompts for ambient/lo-fi creators
+    </p>
+    <button class="report-cta" onclick="downloadReport()">📥 Download HTML Report</button>`;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'message agent';
+    bubble.innerHTML = `<div class="avatar">SC</div><div class="bubble">${html}</div>`;
+    document.getElementById('messages').appendChild(bubble);
+    bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    setLoading(false);
+  }, 1800);
+}
+
+function downloadReport() {
+  const content = `<!DOCTYPE html><html><head><title>SoundCloud UX Report</title></head>
+  <body style="font-family:sans-serif;padding:40px;max-width:800px;margin:auto">
+  <h1 style="color:#f50">SoundCloud UX Insight Report</h1>
+  <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+  <h2>Top Recommendations</h2>
+  <ol>
+    <li>Rework intros on 3 hip-hop tracks with &gt;50% early drop rate</li>
+    <li>Fix drill/hip-hop search misclassification (affects 15k monthly searches)</li>
+    <li>Activate timed-comment prompts for ambient/lo-fi creators</li>
+  </ol>
+  <p><em>Full analysis available in the MCP agent.</em></p>
+  </body></html>`;
+  const blob = new Blob([content], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `soundcloud-ux-report-${Date.now()}.html`;
+  a.click();
+}
+
+function sendQuery(text) {
+  document.getElementById('inputField').value = text;
+  sendMessage();
+}
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  const initial = role === 'user' ? 'G' : 'SC';
+  div.innerHTML = `<div class="avatar">${initial}</div><div class="bubble">${escapeHtml(text)}</div>`;
+  msgs.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function addAgentMessage(html) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message agent';
+  div.innerHTML = `<div class="avatar">SC</div><div class="bubble">${html}</div>`;
+  msgs.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+let typingEl = null;
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'message agent';
+  typingEl.innerHTML = `<div class="avatar">SC</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(typingEl);
+  typingEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+function hideTyping() { if (typingEl) { typingEl.remove(); typingEl = null; } }
+
+function setLoading(state) {
+  isLoading = state;
+  document.getElementById('sendBtn').disabled = state;
+}
+
+function clearChat() {
+  document.getElementById('messages').innerHTML = '';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+</script>
+</body>
+</html>

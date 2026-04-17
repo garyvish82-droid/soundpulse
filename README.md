@@ -127,3 +127,6 @@ See [sprints/SPRINT_PLAN.md](sprints/SPRINT_PLAN.md) for the full 3-week build p
 ---
 
 *SoundPulse · Built with FastMCP · SoundCloud API · Supabase · AWS · soundpulse.me*
+## Current status
+C## Current status
+Currently on Week 5 — Phase: AI Agents — Last completed: Insight Agent v1 (S3 → Claude → Supabase pipeline live)

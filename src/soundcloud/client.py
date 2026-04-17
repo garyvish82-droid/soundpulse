@@ -58,7 +58,7 @@ class SoundCloudClient:
         if self._http is None or self._http.is_closed:
             headers = {"Accept": "application/json; charset=utf-8"}
             if self.access_token:
-                headers["Authorization"] = f"OAuth {self.access_token}"
+                headers["Authorization"] = f"Bearer {self.access_token}"
             self._http = httpx.AsyncClient(
                 base_url=SOUNDCLOUD_API_BASE,
                 headers=headers,

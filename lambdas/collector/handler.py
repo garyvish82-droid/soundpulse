@@ -16,10 +16,13 @@ import os
 import sys
 from datetime import datetime
 
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "package"))
 import boto3
 
 # Allow importing from src/ when running inside Lambda package
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../package"))
 
 from src.soundcloud.client import SoundCloudClient
 
@@ -298,7 +301,7 @@ def handler(event: dict, context) -> dict:
     s3_bucket = os.environ["S3_BUCKET"]
 
     client_id    = secrets.get("sc_client_id")
-    access_token = secrets.get("sc_oauth_token", "").strip()
+    access_token = os.environ.get("SC_OAUTH_TOKEN") or secrets.get("sc_oauth_token", "").strip()
     use_real     = bool(access_token)
 
     user_ids = [
@@ -307,6 +310,8 @@ def handler(event: dict, context) -> dict:
         if uid.strip()
     ]
 
+    token_preview = access_token[:20] if access_token else "EMPTY"
+    logger.info(f"Token preview={token_preview} env={bool(os.environ.get('SC_OAUTH_TOKEN'))} ssm={bool(secrets.get('sc_oauth_token'))}")
     mode = "REAL" if use_real else "MOCK"
     logger.info(f"Collector starting — mode={mode}, users={user_ids}")
 

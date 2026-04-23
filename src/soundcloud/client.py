@@ -58,7 +58,7 @@ class SoundCloudClient:
         if self._http is None or self._http.is_closed:
             headers = {"Accept": "application/json; charset=utf-8"}
             if self.access_token:
-                headers["Authorization"] = f"Bearer {self.access_token}"
+                headers["Authorization"] = f"OAuth {self.access_token}"
             self._http = httpx.AsyncClient(
                 base_url=SOUNDCLOUD_API_BASE,
                 headers=headers,
@@ -131,12 +131,12 @@ class SoundCloudClient:
 
     async def get_user(self, user_id: int) -> SCUser:
         """Fetch a user profile."""
-        data = await self._get(f"/users/{user_id}")
+        data = await self._get("/me")
         return SCUser(**data)
 
     async def get_user_tracks(self, user_id: int, limit: int = 50) -> list[SCTrack]:
         """Get all tracks uploaded by a user."""
-        data = await self._get(f"/users/{user_id}/tracks", {"limit": limit})
+        data = await self._get("/me/tracks", {"limit": limit})
         return [SCTrack(**t) for t in (data.get("collection") or data)]
 
     async def get_user_followers(self, user_id: int, limit: int = 200) -> list[SCUser]:

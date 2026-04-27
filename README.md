@@ -128,5 +128,4 @@ See [sprints/SPRINT_PLAN.md](sprints/SPRINT_PLAN.md) for the full 3-week build p
 
 *SoundPulse · Built with FastMCP · SoundCloud API · Supabase · AWS · soundpulse.me*
 ## Current status
-C## Current status
-Currently on Week 5 — Phase: AI Agents — Last completed: Insight Agent v1 (S3 → Claude → Supabase pipeline live)
+Currently on Week 7 — Phase: MCP Server — Last completed: All 4 MCP tools live and tested (get_insights, get_strategy, get_audience, get_alerts). Next: connect to Claude.ai for natural language queries.

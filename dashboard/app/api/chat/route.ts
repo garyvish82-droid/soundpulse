@@ -53,13 +53,13 @@ export async function POST(req: NextRequest) {
       });
       const routingData = await routingRes.json();
       const routingText = routingData.content?.[0]?.text || "";
-      const toolMatch = routingText.match(/<tool_call>(.*?)<\/tool_call>/s);
+      const toolMatch = routingText.match(/<tool_call>([\s\S]*?)<\/tool_call>/);
       if (toolMatch) {
         const toolJson = JSON.parse(toolMatch[1]);
         toolName = toolJson.tool;
         toolGoal = toolJson.goal;
       }
-      if (!toolName) return NextResponse.json({ response: routingText.replace(/<tool_call>.*?<\/tool_call>/s, "").trim(), tool: null });
+      if (!toolName) return NextResponse.json({ response: routingText.replace(/<tool_call>[\s\S]*?<\/tool_call>/, "").trim(), tool: null });
     }
 
     const toolData = await callMcpTool(toolName, toolGoal);

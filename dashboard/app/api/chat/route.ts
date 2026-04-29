@@ -72,14 +72,13 @@ export async function POST(req: NextRequest) {
         max_tokens: 1000,
         system: SYSTEM_PROMPT,
         messages: [
-          { role: "user", content: message },
-          { role: "assistant", content: `<tool_call>{"tool": "${toolName}"${toolGoal ? `, "goal": "${toolGoal}"` : ""}}</tool_call>\n\nData from ${toolName}:\n\n${JSON.stringify(toolData, null, 2)}\n\nProviding analysis:` },
-          { role: "user", content: "Please provide your analysis based on the data above." },
+          { role: "user", content: `${message}\n\nHere is the data from the ${toolName} tool:\n${JSON.stringify(toolData, null, 2)}\n\nPlease analyze this data and provide actionable insights.` },
         ],
       }),
     });
     const formatData = await formatRes.json();
-    const response = formatData.content?.[0]?.text || "Unable to generate response.";
+    console.log("Format API response:", JSON.stringify(formatData).slice(0, 200));
+    const response = formatData.content?.[0]?.text || formatData.error?.message || "Unable to generate response.";
     return NextResponse.json({ response, tool: toolName, data: toolData });
   } catch (err) {
     console.error("API route error:", err);

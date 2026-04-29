@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       const routingRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 300, system: SYSTEM_PROMPT, messages: [{ role: "user", content: message }] }),
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 300, system: SYSTEM_PROMPT, messages: [{ role: "user", content: message }] }),
       });
       const routingData = await routingRes.json();
       const routingText = routingData.content?.[0]?.text || "";
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-5",
+        model: "claude-sonnet-4-6",
         max_tokens: 1000,
         system: SYSTEM_PROMPT,
         messages: [

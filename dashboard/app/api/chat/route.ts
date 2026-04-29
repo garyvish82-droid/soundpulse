@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const MCP_BASE = process.env.MCP_BASE_URL || "https://soundpulse-production-43b3.up.railway.app";
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY!;
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || "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";
 const DEFAULT_USER_ID = process.env.DEFAULT_USER_ID || "1329042120";
 
 const SYSTEM_PROMPT = `You are SoundPulse, an AI analytics assistant for SoundCloud creators.

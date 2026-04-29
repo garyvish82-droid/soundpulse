@@ -187,6 +187,46 @@ function createMcpServer() {
   return server;
 }
 
+
+// REST endpoints for dashboard
+app.get('/api/insights/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const { data, error } = await supabase.from('ai_insights').select('*').eq('user_id', user_id).eq('agent_type', 'insight').order('created_at', { ascending: false }).limit(1);
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data.length) return res.status(404).json({ error: 'No insights found' });
+  const i = data[0];
+  res.json({ summary: i.summary, engagement_score: i.engagement_score, top_performer: { id: i.top_performer_id, title: i.top_performer_title }, underperformer: { id: i.underperformer_id, title: i.underperformer_title }, patterns: i.patterns, recommendations: i.recommendations, track_count: i.track_count, generated_at: i.created_at });
+});
+
+app.get('/api/strategy/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const { goal } = req.query;
+  const { data, error } = await supabase.from('ai_insights').select('*').eq('user_id', user_id).eq('agent_type', 'strategy').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data.length) return res.status(404).json({ error: 'No strategy found' });
+  let strategy = data[0];
+  if (goal) { const match = data.find(function(r) { return (r.raw_json && r.raw_json.goal_param && r.raw_json.goal_param.toLowerCase().includes(goal.toLowerCase())) || (r.raw_json && r.raw_json.goal && r.raw_json.goal.toLowerCase().includes(goal.toLowerCase())); }); if (match) strategy = match; }
+  res.json({ goal: strategy.raw_json && strategy.raw_json.goal, strategy_summary: strategy.summary, actions: strategy.recommendations, quick_win: strategy.raw_json && strategy.raw_json.quick_win, watch_metric: strategy.raw_json && strategy.raw_json.watch_metric, generated_at: strategy.created_at });
+});
+
+app.get('/api/alerts/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const { data, error } = await supabase.from('ai_insights').select('*').eq('user_id', user_id).eq('agent_type', 'anomaly').order('created_at', { ascending: false }).limit(1);
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data.length) return res.status(404).json({ error: 'No alerts found' });
+  const r = data[0];
+  res.json({ alert_count: r.raw_json && r.raw_json.alert_count || 0, severity: r.raw_json && r.raw_json.severity || 'none', summary: r.summary, alerts: r.recommendations || [], generated_at: r.created_at });
+});
+
+app.get('/api/audience/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const { data, error } = await supabase.from('ai_insights').select('*').eq('user_id', user_id).eq('agent_type', 'insight').order('created_at', { ascending: false }).limit(1);
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data || !data.length) return res.status(404).json({ error: 'No audience data found' });
+  const i = data[0];
+  res.json({ user_id, engagement_score: i.engagement_score, audience_signals: { core_fanbase_quality: i.engagement_score >= 6 ? 'High — consistent 6-7% like rate indicates attentive, loyal audience' : 'Developing', audience_ceiling: i.track_count <= 5 ? 'Limited catalog constrains audience growth' : 'Established catalog', top_performing_content: i.top_performer_title, underperforming_content: i.underperformer_title }, patterns: i.patterns, generated_at: i.created_at });
+});
+
 // ── SSE endpoint for Claude.ai ────────────────────────────────────────────
 const transports = {};
 

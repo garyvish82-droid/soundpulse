@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       const rawText = await formatRes.text();
       console.log("Anthropic raw status:", formatRes.status, "body:", rawText.slice(0, 300));
       const formatData = JSON.parse(rawText);
-      response = (formatData.content?.[0]?.text || rawText.slice(0, 500)).replace(/<tool_call>.*?<\/tool_call>/gs, "").trim();
+      response = (formatData.content?.[0]?.text || rawText.slice(0, 500)).replace(/<tool_call>[\s\S]*?<\/tool_call>/g, "").trim();
     } catch (fetchErr) {
       console.error("Anthropic fetch error:", fetchErr);
       response = `Fetch error: ${fetchErr}`;

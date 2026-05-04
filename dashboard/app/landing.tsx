@@ -235,7 +235,7 @@ export default function Landing() {
             <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", marginBottom: "1rem" }}>🎛️</div>
             <div style={{ fontSize: "0.8rem", color: "#475569", fontFamily: "'DM Mono', monospace", lineHeight: 2 }}>
               <div>Garik Vishnevski</div>
-              <div>PM · 7 years</div>
+              <div>PM · 8 years</div>
               <div>Project Manager · 8 years</div>
               <div>DJ · Producer · Live</div>
               <div style={{ marginTop: "0.5rem", color: "#3b82f6" }}>Netanya, Israel</div>

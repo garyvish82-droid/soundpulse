@@ -64,21 +64,28 @@ export async function POST(req: NextRequest) {
 
     const toolData = await callMcpTool(toolName, toolGoal);
 
-    const formatRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: [
-          { role: "user", content: `${message}\n\nHere is the data from the ${toolName} tool:\n${JSON.stringify(toolData, null, 2)}\n\nPlease analyze this data and provide actionable insights.` },
-        ],
-      }),
-    });
-    const formatData = await formatRes.json();
-    console.log("Format API response:", JSON.stringify(formatData).slice(0, 200));
-    const response = formatData.content?.[0]?.text || JSON.stringify(formatData).slice(0, 500);
+    let response = "No response generated";
+    try {
+      const formatRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: [
+            { role: "user", content: `${message}\n\nData from ${toolName}:\n${JSON.stringify(toolData, null, 2)}\n\nProvide a clear analysis.` },
+          ],
+        }),
+      });
+      const rawText = await formatRes.text();
+      console.log("Anthropic raw status:", formatRes.status, "body:", rawText.slice(0, 300));
+      const formatData = JSON.parse(rawText);
+      response = formatData.content?.[0]?.text || rawText.slice(0, 500);
+    } catch (fetchErr) {
+      console.error("Anthropic fetch error:", fetchErr);
+      response = `Fetch error: ${fetchErr}`;
+    }
     return NextResponse.json({ response, tool: toolName, data: toolData });
   } catch (err) {
     console.error("API route error:", err);

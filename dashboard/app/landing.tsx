@@ -28,6 +28,11 @@ export default function Landing() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100vh); } }
+        @media (max-width: 640px) {
+          .nav-links { display: none; }
+          .hero-title { font-size: 2.25rem; }
+          section { padding-left: 1.25rem; padding-right: 1.25rem; }
+        }
         .fade-up { animation: fadeUp 0.8s ease forwards; }
         .fade-up-2 { animation: fadeUp 0.8s 0.15s ease forwards; opacity: 0; }
         .fade-up-3 { animation: fadeUp 0.8s 0.3s ease forwards; opacity: 0; }
@@ -144,7 +149,7 @@ export default function Landing() {
 
       {/* Problem */}
       <section style={{ padding: "5rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", alignItems: "center" }}>
           <div>
             <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1rem" }}>THE PROBLEM</p>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2rem", fontWeight: 700, lineHeight: 1.25, marginBottom: "1.25rem" }}>
@@ -189,7 +194,7 @@ export default function Landing() {
           Ask anything. Claude routes your question to the right agent, pulls real data, and responds in plain English.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.875rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.875rem" }}>
           {[
             { icon: "⬡", color: "#6366f1", label: "Insights", desc: "Pattern analysis across your full catalog. BPM correlations, engagement dynamics, what's actually working and why." },
             { icon: "◎", color: "#10b981", label: "Strategy", desc: "Ranked action plan scoped to your goal — more reposts, growing Germany, improving completion rate." },
@@ -224,7 +229,7 @@ export default function Landing() {
 
       {/* Story */}
       <section id="story" style={{ padding: "5rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "4rem", alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "2rem", alignItems: "start" }}>
           <div>
             <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1rem" }}>THE BUILDER</p>
             <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", marginBottom: "1rem" }}>🎛️</div>

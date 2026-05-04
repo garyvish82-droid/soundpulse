@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     });
     const formatData = await formatRes.json();
     console.log("Format API response:", JSON.stringify(formatData).slice(0, 200));
-    const response = formatData.content?.[0]?.text || (formatData.error ? `API Error: ${formatData.error.type} - ${formatData.error.message}` : "Unable to generate response.");
+    const response = formatData.content?.[0]?.text || JSON.stringify(formatData).slice(0, 500);
     return NextResponse.json({ response, tool: toolName, data: toolData });
   } catch (err) {
     console.error("API route error:", err);

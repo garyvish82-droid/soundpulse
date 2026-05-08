@@ -14,7 +14,7 @@ export default function Landing() {
   return (
     <div style={{
       background: "#080c14",
-      color: "#e8eaf0",
+      color: "#eaecf2",
       fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
       overflowX: "hidden",
     }}>
@@ -92,7 +92,7 @@ export default function Landing() {
         <div style={{
           position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
           width: "600px", height: "600px", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse 700px 500px at 50% 30%, rgba(59,130,246,0.13) 0%, rgba(99,102,241,0.06) 50%, transparent 70%)",
           pointerEvents: "none",
         }} />
 
@@ -135,7 +135,7 @@ export default function Landing() {
             Open the app <span>→</span>
           </a>
           <a href="#how" className="secondary-btn" style={{
-            border: "1px solid #1e293b", color: "#94a3b8",
+            border: "1px solid #2d4a6e", color: "#94a3b8",
             padding: "0.875rem 2rem", borderRadius: "9px", fontSize: "0.9rem",
             transition: "all 0.2s",
           }}>
@@ -146,22 +146,22 @@ export default function Landing() {
         {/* Live indicator */}
         <div style={{ marginTop: "3rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", animation: "pulse 2s infinite" }} />
-          <span style={{ fontSize: "0.72rem", color: "#475569", fontFamily: "'DM Mono', monospace" }}>Live on SoundCloud data · Powered by Claude</span>
+          <span style={{ fontSize: "0.72rem", color: "#64748b", fontFamily: "'DM Mono', monospace" }}>Live on SoundCloud data · Powered by Claude</span>
         </div>
       </section>
 
       {/* Problem */}
-      <section style={{ padding: "5rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", alignItems: "center" }}>
+      <section style={{ padding: "5rem 2rem", maxWidth: "100%", background: "rgba(13,22,37,0.7)", borderTop: "1px solid #0f1e30", borderBottom: "1px solid #0f1e30" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", alignItems: "center" }}>
           <div>
             <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1rem" }}>THE PROBLEM</p>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2rem", fontWeight: 700, lineHeight: 1.25, marginBottom: "1.25rem" }}>
               Creators are flying blind.
             </h2>
-            <p style={{ color: "#64748b", lineHeight: 1.75, fontSize: "0.925rem" }}>
+            <p style={{ color: "#8899b0", lineHeight: 1.75, fontSize: "0.925rem" }}>
               SoundCloud gives you play counts. It doesn't tell you <em>why</em> one track generates 45 reposts while another sits at 8 — despite identical engagement rates.
             </p>
-            <p style={{ color: "#64748b", lineHeight: 1.75, fontSize: "0.925rem", marginTop: "1rem" }}>
+            <p style={{ color: "#8899b0", lineHeight: 1.75, fontSize: "0.925rem", marginTop: "1rem" }}>
               The patterns are in the data. They just need something intelligent enough to find them.
             </p>
           </div>
@@ -173,27 +173,26 @@ export default function Landing() {
             ].map((item, i) => (
               <div key={i} style={{
                 background: "#0d1625", border: "1px solid #1e293b",
+                borderLeft: "2px solid rgba(59,130,246,0.5)",
                 borderRadius: "10px", padding: "1.125rem 1.25rem",
                 display: "flex", alignItems: "center", gap: "1rem",
               }}>
                 <span style={{ fontSize: "1.5rem", fontFamily: "'Playfair Display', serif", fontWeight: 700, color: "#3b82f6", minWidth: "56px" }}>{item.stat}</span>
                 <div>
                   <div style={{ fontSize: "0.8rem", fontWeight: 500, color: "#e2e8f0" }}>{item.label}</div>
-                  <div style={{ fontSize: "0.72rem", color: "#475569", marginTop: "0.1rem" }}>{item.sub}</div>
+                  <div style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "0.1rem" }}>{item.sub}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* How it works */}
       <section id="how" style={{ padding: "5rem 2rem", maxWidth: "900px", margin: "0 auto" }}>
         <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1rem", textAlign: "center" }}>HOW IT WORKS</p>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2rem", fontWeight: 700, textAlign: "center", marginBottom: "0.75rem" }}>
           Four agents. One question away.
         </h2>
-        <p style={{ color: "#64748b", textAlign: "center", fontSize: "0.9rem", marginBottom: "3rem", maxWidth: "480px", margin: "0 auto 3rem" }}>
+        <p style={{ color: "#8899b0", textAlign: "center", fontSize: "0.9rem", marginBottom: "3rem", maxWidth: "480px", margin: "0 auto 3rem" }}>
           Ask anything. Claude routes your question to the right agent, pulls real data, and responds in plain English.
         </p>
 
@@ -206,12 +205,13 @@ export default function Landing() {
           ].map((agent, i) => (
             <div key={i} className="agent-card" style={{
               background: "#0d1625", border: "1px solid #1e293b",
+              borderTop: `2px solid ${agent.color}44`,
               borderRadius: "12px", padding: "1.5rem",
               transition: "all 0.2s", cursor: "default",
             }}>
               <div style={{ fontSize: "1.25rem", color: agent.color, marginBottom: "0.75rem" }}>{agent.icon}</div>
               <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "#e2e8f0", marginBottom: "0.5rem" }}>{agent.label}</div>
-              <div style={{ fontSize: "0.78rem", color: "#64748b", lineHeight: 1.65 }}>{agent.desc}</div>
+              <div style={{ fontSize: "0.78rem", color: "#8899b0", lineHeight: 1.65 }}>{agent.desc}</div>
             </div>
           ))}
         </div>
@@ -224,7 +224,7 @@ export default function Landing() {
           display: "flex", alignItems: "center", gap: "1rem",
         }}>
           <span style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.3)", borderRadius: "4px", padding: "0.2rem 0.5rem", whiteSpace: "nowrap" }}>MCP</span>
-          <p style={{ fontSize: "0.8rem", color: "#64748b", lineHeight: 1.6 }}>
+          <p style={{ fontSize: "0.8rem", color: "#8899b0", lineHeight: 1.6 }}>
             Built as a <strong style={{ color: "#94a3b8" }}>Model Context Protocol server</strong> — meaning any AI agent (Claude, GPT, Cursor) can call SoundPulse directly. It's not just a product. It's an intelligence layer.
           </p>
         </div>
@@ -236,7 +236,7 @@ export default function Landing() {
           <div>
             <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1rem" }}>THE BUILDER</p>
             <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", marginBottom: "1rem" }}>🎛️</div>
-            <div style={{ fontSize: "0.8rem", color: "#475569", fontFamily: "'DM Mono', monospace", lineHeight: 2 }}>
+            <div style={{ fontSize: "0.8rem", color: "#64748b", fontFamily: "'DM Mono', monospace", lineHeight: 2 }}>
               <div>Garik Vishnevski</div>
               <div>PM · 8 years</div>
               <div>Project Manager · 8 years</div>
@@ -255,7 +255,7 @@ export default function Landing() {
                 "SoundPulse is my pivot into music tech — a real product, not a demo. Built solo in 13 weeks with Claude as my co-pilot, using production infrastructure: AWS Lambda, Supabase, Next.js, and the Anthropic API.",
                 "The goal isn't just to show what I can build. It's to show what's possible when someone who understands music, product, and AI works on the same problem.",
               ].map((para, i) => (
-                <p key={i} style={{ color: "#94a3b8", lineHeight: 1.75, fontSize: "0.9rem" }}>{para}</p>
+                <p key={i} style={{ color: "#a0aec0", lineHeight: 1.75, fontSize: "0.9rem" }}>{para}</p>
               ))}
             </div>
           </div>
@@ -264,8 +264,8 @@ export default function Landing() {
 
       {/* Stack */}
       <section style={{ padding: "4rem 2rem", maxWidth: "700px", margin: "0 auto" }}>
-        <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#475569", letterSpacing: "0.12em", marginBottom: "0.5rem", textAlign: "center" }}>THE ARCHITECTURE</p>
-        <p style={{ fontSize: "0.8rem", color: "#334155", textAlign: "center", marginBottom: "2rem" }}>13 weeks. 8 integrated systems. Built solo.</p>
+        <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#64748b", letterSpacing: "0.12em", marginBottom: "0.5rem", textAlign: "center" }}>THE ARCHITECTURE</p>
+        <p style={{ fontSize: "0.8rem", color: "#64748b", textAlign: "center", marginBottom: "2rem" }}>13 weeks. 8 integrated systems. Built solo.</p>
         <div style={{ background: "#0d1625", border: "1px solid #1e293b", borderRadius: "12px", padding: "1.5rem", fontFamily: "'IBM Plex Mono', monospace" }}>
           <svg viewBox="0 0 380 520" width="100%" role="img">
             <title>SoundPulse architecture</title>
@@ -327,14 +327,14 @@ export default function Landing() {
         <div style={{
           position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
           width: "500px", height: "500px", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(59,130,246,0.09) 0%, transparent 70%)",
           pointerEvents: "none",
         }} />
         <p style={{ fontSize: "0.7rem", fontFamily: "'DM Mono', monospace", color: "#3b82f6", letterSpacing: "0.12em", marginBottom: "1.25rem" }}>READY TO TRY IT</p>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "2.25rem", fontWeight: 700, marginBottom: "1rem", lineHeight: 1.2 }}>
           Ask your first question.
         </h2>
-        <p style={{ color: "#64748b", fontSize: "0.9rem", marginBottom: "2.5rem", maxWidth: "400px", margin: "0 auto 2.5rem" }}>
+        <p style={{ color: "#8899b0", fontSize: "0.9rem", marginBottom: "2.5rem", maxWidth: "400px", margin: "0 auto 2.5rem" }}>
           No setup. No account. Just open the app and start asking.
         </p>
         <a href="/dashboard" className="cta-btn" style={{
@@ -345,7 +345,7 @@ export default function Landing() {
         }}>
           Open SoundPulse <span>→</span>
         </a>
-        <div style={{ marginTop: "3rem", fontSize: "0.72rem", color: "#1e293b", fontFamily: "'DM Mono', monospace" }}>
+        <div style={{ marginTop: "3rem", fontSize: "0.72rem", color: "#334155", fontFamily: "'DM Mono', monospace" }}>
           soundpulse.me · Built by Garik Vishnevski · 2026
         </div>
       </section>

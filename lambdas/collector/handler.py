@@ -289,6 +289,55 @@ def _archive_to_s3(bucket: str, payload: dict) -> str:
     return key
 
 
+# ─── Token refresh ────────────────────────────────────────────────────────────
+
+import urllib.request
+import urllib.parse
+import base64
+
+def _token_expired(access_token: str) -> bool:
+    """Decode JWT exp claim and check if expired (with 5 min buffer)."""
+    try:
+        from datetime import timezone
+        payload = access_token.split(".")[1]
+        payload += "=" * (4 - len(payload) % 4)
+        claims = json.loads(base64.b64decode(payload))
+        exp = claims.get("exp", 0)
+        now = datetime.now(timezone.utc).timestamp()
+        return now >= (exp - 300)  # refresh 5 min before expiry
+    except Exception:
+        return True  # if we can't decode, assume expired
+
+
+def _refresh_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
+    """Exchange refresh token for a new access token and update SSM."""
+    data = urllib.parse.urlencode({
+        "grant_type":    "refresh_token",
+        "client_id":     client_id,
+        "client_secret": client_secret,
+        "refresh_token": refresh_token,
+    }).encode()
+
+    req = urllib.request.Request(
+        "https://api.soundcloud.com/oauth2/token",
+        data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"},
+        method="POST",
+    )
+
+    with urllib.request.urlopen(req) as resp:
+        tokens = json.loads(resp.read())
+
+    new_access_token  = tokens["access_token"]
+    new_refresh_token = tokens.get("refresh_token", refresh_token)
+
+    ssm.put_parameter(Name="/soundpulse/sc_oauth_token",   Value=new_access_token,  Type="SecureString", Overwrite=True)
+    ssm.put_parameter(Name="/soundpulse/sc_refresh_token", Value=new_refresh_token, Type="SecureString", Overwrite=True)
+
+    logger.info("✓ Token refreshed and saved to SSM")
+    return new_access_token
+
+
 # ─── Lambda entry point ───────────────────────────────────────────────────────
 
 def handler(event: dict, context) -> dict:
@@ -300,9 +349,27 @@ def handler(event: dict, context) -> dict:
     queue_url = os.environ["SQS_QUEUE_URL"]
     s3_bucket = os.environ["S3_BUCKET"]
 
-    client_id    = secrets.get("sc_client_id")
-    access_token = os.environ.get("SC_OAUTH_TOKEN") or secrets.get("sc_oauth_token", "").strip()
-    use_real     = bool(access_token)
+    client_id     = secrets.get("sc_client_id")
+    client_secret = secrets.get("sc_client_secret", "")
+    access_token  = os.environ.get("SC_OAUTH_TOKEN") or secrets.get("sc_oauth_token", "").strip()
+    refresh_token = secrets.get("sc_refresh_token", "").strip()
+
+    # Auto-refresh if expired
+    if access_token and _token_expired(access_token):
+        if refresh_token and client_secret:
+            logger.info("Token expired — refreshing...")
+            try:
+                access_token = _refresh_access_token(client_id, client_secret, refresh_token)
+                global _secrets
+                _secrets["sc_oauth_token"] = access_token
+            except Exception as e:
+                logger.error(f"Token refresh failed: {e}")
+                access_token = ""
+        else:
+            logger.warning("Token expired but no refresh_token or client_secret in SSM — falling back to MOCK")
+            access_token = ""
+
+    use_real = bool(access_token)
 
     user_ids = [
         int(uid.strip())
@@ -310,11 +377,9 @@ def handler(event: dict, context) -> dict:
         if uid.strip()
     ]
 
-    token_preview = access_token[:20] if access_token else "EMPTY"
-    logger.info(f"Token preview={token_preview} env={bool(os.environ.get('SC_OAUTH_TOKEN'))} ssm={bool(secrets.get('sc_oauth_token'))}")
     mode = "REAL" if use_real else "MOCK"
     if not use_real:
-        logger.warning("⚠️  No SC_OAUTH_TOKEN found — running in MOCK mode. Set sc_oauth_token in SSM or SC_OAUTH_TOKEN env var to collect real data.")
+        logger.warning("⚠️  No valid token — running in MOCK mode.")
     logger.info(f"Collector starting — mode={mode}, users={user_ids}")
 
     for user_id in user_ids:

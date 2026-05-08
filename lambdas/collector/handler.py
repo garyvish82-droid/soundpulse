@@ -36,9 +36,9 @@ ssm = boto3.client("ssm", region_name="us-east-1")
 _secrets: dict = {}
 
 
-def _get_ssm_params() -> dict:
+def _get_ssm_params(force_refresh: bool = False) -> dict:
     global _secrets
-    if _secrets:
+    if _secrets and not force_refresh:
         return _secrets
 
     response = ssm.get_parameters_by_path(
@@ -93,6 +93,7 @@ async def _fetch_real_data(client_id: str, access_token: str, user_id: int) -> t
         client_id=client_id,
         access_token=access_token,
     )
+    logger.info(f"SoundCloudClient init — has_token={bool(access_token)} token_preview={access_token[:20] if access_token else 'NONE'}")
 
     try:
         sc_user   = await client.get_user(user_id)
@@ -360,7 +361,7 @@ def handler(event: dict, context) -> dict:
             logger.info("Token expired — refreshing...")
             try:
                 access_token = _refresh_access_token(client_id, client_secret, refresh_token)
-                global _secrets
+                secrets = _get_ssm_params(force_refresh=True)
                 _secrets["sc_oauth_token"] = access_token
             except Exception as e:
                 logger.error(f"Token refresh failed: {e}")

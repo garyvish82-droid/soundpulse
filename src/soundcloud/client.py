@@ -49,16 +49,17 @@ class SoundCloudClient:
                 "Register at https://developers.soundcloud.com/ and set it in .env"
             )
 
-        self._http: Optional[httpx.AsyncClient] = None
+        self._http: Optional[httpx.AsyncClient] = None  # always create fresh per instance
         self._request_count = 0
         self._rate_limit_reset: Optional[datetime] = None
 
     @property
     def http(self) -> httpx.AsyncClient:
         if self._http is None or self._http.is_closed:
-            headers = {"Accept": "application/json; charset=utf-8"}
-            if self.access_token:
-                headers["Authorization"] = f"OAuth {self.access_token}"
+            headers = {
+                "Accept": "application/json; charset=utf-8",
+                "Authorization": f"OAuth {self.access_token}",
+            }
             self._http = httpx.AsyncClient(
                 base_url=SOUNDCLOUD_API_BASE,
                 headers=headers,
@@ -68,11 +69,10 @@ class SoundCloudClient:
         return self._http
 
     async def _get(self, path: str, params: dict | None = None) -> Any:
-        """Make a GET request, injecting client_id and handling rate limits."""
+        """Make a GET request, handling rate limits."""
         p = dict(params or {})
-        p.setdefault("client_id", self.client_id)
 
-        # Respect rate limits (SoundCloud: 15,000 req/day for free tier)
+        # Respect rate limits
         if self._rate_limit_reset and datetime.utcnow() < self._rate_limit_reset:
             wait_secs = (self._rate_limit_reset - datetime.utcnow()).total_seconds()
             logger.warning(f"Rate limited — waiting {wait_secs:.1f}s")
@@ -137,7 +137,8 @@ class SoundCloudClient:
     async def get_user_tracks(self, user_id: int, limit: int = 50) -> list[SCTrack]:
         """Get all tracks uploaded by a user."""
         data = await self._get(f"/users/{user_id}/tracks", {"limit": limit})
-        return [SCTrack(**t) for t in (data.get("collection") or data)]
+        items = data if isinstance(data, list) else data.get("collection") or data
+        return [SCTrack(**t) for t in items]
 
     async def get_user_followers(self, user_id: int, limit: int = 200) -> list[SCUser]:
         """Get followers of a user."""

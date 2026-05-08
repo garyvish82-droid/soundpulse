@@ -28,6 +28,9 @@ export default function Landing() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100vh); } }
+        @keyframes flow { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+        .arch-line { animation: flow 1.2s linear infinite; }
+        @keyframes nodePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         @media (max-width: 640px) {
           .nav-links { display: none; }
           .hero-title { font-size: 2.25rem; }
@@ -280,7 +283,7 @@ export default function Landing() {
             <rect x="90" y="32" width="200" height="40" rx="6" fill="#0d1625" stroke="#1e3a5f" strokeWidth="0.5"/>
             <text x="190" y="48" textAnchor="middle" fontSize="11" fill="#60a5fa" fontFamily="IBM Plex Mono" fontWeight="500">SoundCloud API</text>
             <text x="190" y="62" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">/me/tracks · plays · likes · reposts</text>
-            <line x1="190" y1="72" x2="190" y2="132" stroke="#1e3a5f" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
+            <line x1="190" y1="72" x2="190" y2="132" stroke="#1e3a5f" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
             <text x="200" y="107" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">15 min cron</text>
             <rect x="90" y="132" width="90" height="40" rx="6" fill="#0d1625" stroke="#1e3a5f" strokeWidth="0.5"/>
             <text x="135" y="148" textAnchor="middle" fontSize="10" fill="#a78bfa" fontFamily="IBM Plex Mono" fontWeight="500">Lambda</text>
@@ -288,28 +291,28 @@ export default function Landing() {
             <rect x="200" y="132" width="90" height="40" rx="6" fill="#0d1625" stroke="#1e3a5f" strokeWidth="0.5"/>
             <text x="245" y="148" textAnchor="middle" fontSize="10" fill="#a78bfa" fontFamily="IBM Plex Mono" fontWeight="500">SQS</text>
             <text x="245" y="162" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">queue</text>
-            <line x1="180" y1="152" x2="200" y2="152" stroke="#4f46e5" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
-            <line x1="190" y1="172" x2="190" y2="232" stroke="#1e293b" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
+            <line x1="180" y1="152" x2="200" y2="152" stroke="#4f46e5" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
+            <line x1="190" y1="172" x2="190" y2="232" stroke="#1e293b" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
             <rect x="90" y="232" width="90" height="40" rx="6" fill="#0d1625" stroke="#1e3a5f" strokeWidth="0.5"/>
             <text x="135" y="248" textAnchor="middle" fontSize="10" fill="#34d399" fontFamily="IBM Plex Mono" fontWeight="500">S3</text>
             <text x="135" y="262" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">raw archive</text>
             <rect x="200" y="232" width="90" height="40" rx="6" fill="#0d1625" stroke="#1e3a5f" strokeWidth="0.5"/>
             <text x="245" y="248" textAnchor="middle" fontSize="10" fill="#34d399" fontFamily="IBM Plex Mono" fontWeight="500">Supabase</text>
             <text x="245" y="262" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">ai_insights</text>
-            <line x1="180" y1="252" x2="200" y2="252" stroke="#059669" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
-            <line x1="190" y1="272" x2="190" y2="332" stroke="#1e293b" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
+            <line x1="180" y1="252" x2="200" y2="252" stroke="#059669" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
+            <line x1="190" y1="272" x2="190" y2="332" stroke="#1e293b" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
             <rect x="90" y="332" width="200" height="42" rx="6" fill="#0d1625" stroke="#d97706" strokeWidth="0.5"/>
             <text x="190" y="348" textAnchor="middle" fontSize="10" fill="#fbbf24" fontFamily="IBM Plex Mono" fontWeight="500">Claude API (Sonnet)</text>
             <text x="190" y="362" textAnchor="middle" fontSize="9" fill="#78716c" fontFamily="IBM Plex Mono">Insight · Strategy · Anomaly</text>
-            <line x1="190" y1="374" x2="190" y2="432" stroke="#d97706" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
+            <line x1="190" y1="374" x2="190" y2="432" stroke="#d97706" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
             <rect x="90" y="432" width="90" height="40" rx="6" fill="#0d1625" stroke="#3b82f6" strokeWidth="0.5"/>
             <text x="135" y="448" textAnchor="middle" fontSize="10" fill="#60a5fa" fontFamily="IBM Plex Mono" fontWeight="500">MCP Server</text>
             <text x="135" y="462" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">Railway</text>
             <rect x="200" y="432" width="90" height="40" rx="6" fill="#0d1625" stroke="#3b82f6" strokeWidth="0.5"/>
             <text x="245" y="448" textAnchor="middle" fontSize="10" fill="#60a5fa" fontFamily="IBM Plex Mono" fontWeight="500">Dashboard</text>
             <text x="245" y="462" textAnchor="middle" fontSize="9" fill="#334155" fontFamily="IBM Plex Mono">Vercel</text>
-            <line x1="180" y1="452" x2="200" y2="452" stroke="#3b82f6" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)"/>
-            <circle cx="350" cy="452" r="4" fill="#10b981"/>
+            <line x1="180" y1="452" x2="200" y2="452" stroke="#3b82f6" strokeWidth="1" strokeDasharray="8 4" markerEnd="url(#arr2)" className="arch-line"/>
+            <circle cx="350" cy="452" r="4" fill="#10b981" style={{animation: "nodePulse 2s infinite"}}/>
             <text x="344" y="448" textAnchor="end" fontSize="9" fill="#10b981" fontFamily="IBM Plex Mono">live</text>
           </svg>
         </div>

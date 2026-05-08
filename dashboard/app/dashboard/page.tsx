@@ -7,45 +7,49 @@ const AGENTS = [
     id: "get_insights",
     label: "Insights",
     icon: "⬡",
-    desc: "Patterns & track performance",
+    desc: "Find out what's actually working",
     color: "#6366f1",
     bg: "rgba(99,102,241,0.08)",
     border: "rgba(99,102,241,0.3)",
     glow: "rgba(99,102,241,0.15)",
-    tooltip: "Reads your last 32 tracks from SoundCloud. Compares plays, likes, reposts and comments across your catalog. Claude identifies what\'s working, what\'s underperforming, and why — with specific numbers.",
+    tooltip: "Reads your last 32 tracks from SoundCloud. Compares plays, likes, reposts and comments across your catalog. Claude identifies what's working, what's underperforming, and why — with specific numbers.",
+    loading: "Reading your tracks from SoundCloud...",
   },
   {
     id: "get_strategy",
     label: "Strategy",
     icon: "◎",
-    desc: "Ranked action plan",
+    desc: "Get a ranked to-do list for this week",
     color: "#10b981",
     bg: "rgba(16,185,129,0.08)",
     border: "rgba(16,185,129,0.3)",
     glow: "rgba(16,185,129,0.15)",
     tooltip: "Takes your latest insight report and builds a ranked 5-step action plan. Each action has a timeframe, expected impact, and rationale tied to your actual data. Ask with a goal like \"more reposts\" to get a focused plan.",
+    loading: "Building your action plan from latest insights...",
   },
   {
     id: "get_audience",
     label: "Audience",
     icon: "◉",
-    desc: "Listener analysis",
+    desc: "Understand who's listening and why",
     color: "#f59e0b",
     bg: "rgba(245,158,11,0.08)",
     border: "rgba(245,158,11,0.3)",
     glow: "rgba(245,158,11,0.15)",
     tooltip: "Analyses your engagement score, like rate, and catalog patterns to profile your listener base. Tells you whether your audience is casual or loyal, and what your growth ceiling looks like based on current signals.",
+    loading: "Analysing your listener patterns...",
   },
   {
     id: "get_alerts",
     label: "Alerts",
     icon: "◬",
-    desc: "Anomaly detection",
+    desc: "See what changed since yesterday",
     color: "#ef4444",
     bg: "rgba(239,68,68,0.08)",
     border: "rgba(239,68,68,0.3)",
     glow: "rgba(239,68,68,0.15)",
     tooltip: "Compares your two most recent SoundCloud snapshots (collected every 15 min). Flags any metric that spiked >15% or dropped >10% — plays, likes, reposts, or comments — and tells you exactly what to do about it.",
+    loading: "Scanning for spikes and drops across your tracks...",
   },
 ];
 
@@ -168,7 +172,6 @@ export default function Dashboard() {
       flexDirection: "column",
       fontFamily: "'IBM Plex Sans', 'Helvetica Neue', sans-serif",
     }}>
-      {/* Google Fonts */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,8 +182,10 @@ export default function Dashboard() {
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes tooltipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes shimmer { 0%{opacity:0.4} 50%{opacity:0.8} 100%{opacity:0.4} }
         .agent-tooltip { display: none; }
         .agent-btn:hover .agent-tooltip { display: block; animation: tooltipIn 0.15s ease forwards; }
+        .suggestion-chip:hover { border-color: #3b82f6 !important; color: #e2e8f0 !important; background: rgba(59,130,246,0.06) !important; }
       `}</style>
 
       {/* Header */}
@@ -204,18 +209,14 @@ export default function Dashboard() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", animation: "pulse-dot 2s infinite" }} />
-          <span style={{ fontSize: "0.7rem", color: "#64748b", fontFamily: "'IBM Plex Mono', monospace" }}>uid:1329042120</span>
+          <span style={{ fontSize: "0.7rem", color: "#64748b", fontFamily: "'IBM Plex Mono', monospace" }}>Garik · SoundCloud</span>
         </div>
       </header>
 
       {/* Agent Trigger Pads */}
-      <div style={{
-        padding: "1rem 1.5rem",
-        borderBottom: "1px solid #1e293b",
-        flexShrink: 0,
-      }}>
-        <p style={{ fontSize: "0.65rem", color: "#475569", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.75rem", fontFamily: "'IBM Plex Mono', monospace" }}>
-          Run an agent
+      <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid #1e293b", flexShrink: 0 }}>
+        <p style={{ fontSize: "0.65rem", color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.75rem", fontFamily: "'IBM Plex Mono', monospace" }}>
+          Analyze your music →
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.625rem" }}>
           {AGENTS.map((agent) => {
@@ -262,7 +263,8 @@ export default function Dashboard() {
               >
                 <div style={{ fontSize: "1.1rem", marginBottom: "0.4rem", color: agent.color }}>{agent.icon}</div>
                 <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#e2e8f0", marginBottom: "0.2rem" }}>{agent.label}</div>
-                <div style={{ fontSize: "0.68rem", color: "#64748b", lineHeight: 1.3 }}>{agent.desc}</div>
+                <div style={{ fontSize: "0.68rem", color: "#8899b0", lineHeight: 1.3 }}>{agent.desc}</div>
+                {/* Tooltip */}
                 <div className="agent-tooltip" style={{
                   position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
                   transform: "translateX(-50%)",
@@ -276,7 +278,8 @@ export default function Dashboard() {
                   lineHeight: 1.55,
                   zIndex: 50,
                   pointerEvents: "none",
-                  boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${agent.border}`,
+                  boxShadow: `0 4px 20px rgba(0,0,0,0.4)`,
+                  textAlign: "left",
                 }}>
                   <div style={{ color: agent.color, fontSize: "0.65rem", fontWeight: 600, marginBottom: "0.3rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>{agent.label} agent</div>
                   {agent.tooltip}
@@ -303,27 +306,50 @@ export default function Dashboard() {
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "1.25rem 1.5rem" }}>
         {isEmpty ? (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "280px", gap: "2rem" }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem", opacity: 0.15 }}>⬡</div>
-              <p style={{ color: "#475569", fontSize: "0.875rem" }}>Select an agent or ask anything below</p>
-              <p style={{ color: "#334155", fontSize: "0.75rem", marginTop: "0.25rem" }}>Claude routes your question to the right agent automatically</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "1.75rem" }}>
+
+            {/* Preview card */}
+            <div style={{ width: "100%", maxWidth: "520px", background: "#131f35", border: "1px solid #1e293b", borderRadius: "12px", padding: "1rem 1.125rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.75rem", paddingBottom: "0.625rem", borderBottom: "1px solid #1e293b" }}>
+                <span style={{ color: "#6366f1", fontSize: "0.75rem" }}>⬡</span>
+                <span style={{ color: "#475569", fontSize: "0.65rem", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: "0.05em" }}>INSIGHTS AGENT · EXAMPLE OUTPUT</span>
+              </div>
+              <p style={{ fontSize: "0.78rem", color: "#8899b0", lineHeight: 1.6, marginBottom: "0.75rem" }}>
+                Your top track has <strong style={{ color: "#e2e8f0" }}>3.75× more reposts</strong> than your catalog average — and it's the only track with a description. Your like rate is a consistent <strong style={{ color: "#e2e8f0" }}>6–7%</strong> across all tracks, which means your audience quality is strong. The bottleneck is <strong style={{ color: "#e2e8f0" }}>reach, not quality.</strong>
+              </p>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                {[["6.8", "Engagement score"], ["32", "Tracks analysed"], ["3.75×", "Top repost gap"]].map(([val, label]) => (
+                  <div key={label} style={{ flex: 1, background: "#0d1625", borderRadius: "6px", padding: "0.5rem 0.625rem" }}>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e2e8f0" }}>{val}</div>
+                    <div style={{ fontSize: "0.62rem", color: "#475569", marginTop: "0.1rem" }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: "0.625rem", fontSize: "0.65rem", color: "#334155", fontFamily: "'IBM Plex Mono', monospace" }}>
+                ↑ Click any agent above to run this on your real data
+              </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", width: "100%", maxWidth: "480px" }}>
-              {SUGGESTIONS.map((s, i) => (
-                <button key={i} onClick={() => send(s)} style={{
-                  textAlign: "left", fontSize: "0.75rem", color: "#64748b",
-                  border: "1px solid #1e293b", borderRadius: "8px",
-                  padding: "0.625rem 0.75rem", background: "#131f35",
-                  cursor: "pointer", transition: "all 0.15s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "#334155"; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.borderColor = "#1e293b"; }}
-                >
-                  {s}
-                </button>
-              ))}
+
+            {/* Suggestion chips */}
+            <div style={{ width: "100%", maxWidth: "520px" }}>
+              <p style={{ fontSize: "0.65rem", color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.625rem", fontFamily: "'IBM Plex Mono', monospace" }}>
+                Or ask anything:
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                {SUGGESTIONS.map((s, i) => (
+                  <button key={i} onClick={() => send(s)} className="suggestion-chip" style={{
+                    textAlign: "left", fontSize: "0.75rem", color: "#8899b0",
+                    border: "1px solid #1e293b", borderRadius: "8px",
+                    padding: "0.625rem 0.875rem", background: "#131f35",
+                    cursor: "pointer", transition: "all 0.15s",
+                    borderLeft: "2px solid #1e3a5f",
+                  }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
+
           </div>
         ) : (
           <div style={{ maxWidth: "720px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -374,12 +400,29 @@ export default function Dashboard() {
                   {[0, 150, 300].map((delay, i) => (
                     <div key={i} style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#3b82f6", animation: `bounce 0.8s ${delay}ms infinite` }} />
                   ))}
-                  <span style={{ color: "#475569", fontSize: "0.7rem", fontFamily: "'IBM Plex Mono', monospace", marginLeft: "0.25rem" }}>
-                    {activeAgent ? `${AGENTS.find(a => a.id === activeAgent)?.label} agent running...` : "Analyzing..."}
+                  <span style={{ color: "#64748b", fontSize: "0.7rem", fontFamily: "'IBM Plex Mono', monospace", marginLeft: "0.25rem" }}>
+                    {activeAgent ? AGENTS.find(a => a.id === activeAgent)?.loading : "Analyzing..."}
                   </span>
                 </div>
               </div>
             )}
+
+            {/* Persistent suggestion chips below conversation */}
+            {!loading && messages.length > 0 && (
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", paddingTop: "0.25rem" }}>
+                {SUGGESTIONS.map((s, i) => (
+                  <button key={i} onClick={() => send(s)} className="suggestion-chip" style={{
+                    fontSize: "0.7rem", color: "#64748b",
+                    border: "1px solid #1e293b", borderRadius: "20px",
+                    padding: "0.35rem 0.75rem", background: "transparent",
+                    cursor: "pointer", transition: "all 0.15s",
+                  }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div ref={bottomRef} />
           </div>
         )}
@@ -394,7 +437,7 @@ export default function Dashboard() {
               value={input}
               onChange={(e) => setInput(e.target.value.slice(0, 500))}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send(input)}
-              placeholder="Ask about your tracks, audience, or growth..."
+              placeholder='e.g. "Why is one track getting 3× more reposts than the others?"'
               disabled={loading}
               style={{
                 width: "100%", background: "#131f35", border: "1px solid #1e293b",
@@ -407,9 +450,11 @@ export default function Dashboard() {
               onFocus={e => e.target.style.borderColor = "#3b82f6"}
               onBlur={e => e.target.style.borderColor = "#1e293b"}
             />
-            <span style={{ position: "absolute", right: "0.625rem", top: "50%", transform: "translateY(-50%)", fontSize: "0.6rem", color: "#334155", fontFamily: "'IBM Plex Mono', monospace" }}>
-              {input.length}/500
-            </span>
+            {input.length > 400 && (
+              <span style={{ position: "absolute", right: "0.625rem", top: "50%", transform: "translateY(-50%)", fontSize: "0.6rem", color: input.length > 480 ? "#ef4444" : "#64748b", fontFamily: "'IBM Plex Mono', monospace" }}>
+                {input.length}/500
+              </span>
+            )}
           </div>
           <button
             onClick={() => send(input)}
@@ -428,9 +473,6 @@ export default function Dashboard() {
             Send
           </button>
         </div>
-        <p style={{ maxWidth: "720px", margin: "0.5rem auto 0", fontSize: "0.65rem", color: "#334155", fontFamily: "'IBM Plex Mono', monospace" }}>
-          SoundPulse only answers questions about SoundCloud analytics and creator strategy
-        </p>
       </div>
     </div>
   );

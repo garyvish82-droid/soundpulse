@@ -6,7 +6,7 @@ import argparse, json, logging, os, sys
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from typing import Optional
-import anthropic
+import anthropic, boto3
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -18,6 +18,8 @@ SUPABASE_URL    = os.getenv("SUPABASE_URL")
 SUPABASE_KEY    = os.getenv("SUPABASE_SERVICE_KEY")
 ANTHROPIC_KEY   = os.getenv("ANTHROPIC_API_KEY")
 CLAUDE_MODEL    = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
+S3_BUCKET       = os.getenv("S3_BUCKET", "soundpulse-raw-archive")
+AWS_REGION      = os.getenv("AWS_REGION", "us-east-1")
 DEFAULT_USER_ID = 1329042120
 SPIKE_THRESHOLD = 0.15
 DROP_THRESHOLD  = 0.10
@@ -53,21 +55,43 @@ Output ONLY valid JSON matching this schema. No preamble, no markdown, no explan
 
 
 def get_snapshots(user_id: int) -> list[dict]:
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        raise ValueError("SUPABASE_URL or SUPABASE_SERVICE_KEY not set in .env")
-    db: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS + 1)).isoformat()
-    result = (
-        db.table("analytics_snapshots")
-        .select("track_id, track_title, collected_at, playback_count, likes_count, reposts_count, comment_count")
-        .eq("user_id", str(user_id))
-        .gte("collected_at", cutoff)
-        .order("collected_at", desc=False)
-        .limit(10000)
-        .execute()
-    )
-    rows = result.data or []
-    logger.info(f"Loaded {len(rows)} snapshots for user_id={user_id} (last {LOOKBACK_DAYS+1} days)")
+    """Load the two most recent real track snapshots from S3 and flatten into per-track rows."""
+    s3 = boto3.client("s3", region_name=AWS_REGION)
+    prefix = f"raw/tracks/{user_id}/"
+    resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
+    objects = resp.get("Contents", [])
+    while resp.get("IsTruncated"):
+        resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix, ContinuationToken=resp["NextContinuationToken"])
+        objects.extend(resp.get("Contents", []))
+
+    # Only consider real snapshots (size > 5000 bytes = has real tracks)
+    real = sorted([o for o in objects if o["Size"] > 5000], key=lambda o: o["Key"])
+    if len(real) < 2:
+        logger.warning(f"Only {len(real)} real snapshot(s) found — need at least 2 for delta analysis")
+        if not real:
+            raise LookupError(f"No real snapshots found for user_id={user_id}")
+        # Use single snapshot with zeros as baseline
+        real = [real[-1]]
+
+    # Take the two most recent
+    to_load = real[-2:]
+    rows = []
+    for obj in to_load:
+        body = s3.get_object(Bucket=S3_BUCKET, Key=obj["Key"])["Body"].read()
+        payload = json.loads(body)
+        collected_at = payload.get("collectedAt", obj["Key"])
+        for t in payload.get("data", []):
+            rows.append({
+                "track_id":       t["id"],
+                "track_title":    t.get("title", f"Track {t['id']}"),
+                "collected_at":   collected_at,
+                "playback_count": t.get("playback_count", 0),
+                "likes_count":    t.get("likes_count", 0),
+                "reposts_count":  t.get("reposts_count", 0),
+                "comment_count":  t.get("comment_count", 0),
+            })
+
+    logger.info(f"Loaded {len(rows)} track rows from {len(to_load)} S3 snapshots")
     return rows
 
 

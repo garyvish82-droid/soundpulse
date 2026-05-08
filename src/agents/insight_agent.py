@@ -42,9 +42,12 @@ def get_latest_track_snapshot(user_id: int) -> dict:
     prefix = f"raw/tracks/{user_id}/"
     resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
     objects = resp.get("Contents", [])
+    while resp.get("IsTruncated"):
+        resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix, ContinuationToken=resp["NextContinuationToken"])
+        objects.extend(resp.get("Contents", []))
     if not objects:
         raise FileNotFoundError(f"No snapshots found in s3://{S3_BUCKET}/{prefix}")
-    latest = max(objects, key=lambda o: o["LastModified"])
+    latest = max(objects, key=lambda o: o["Key"])
     key = latest["Key"]
     logger.info(f"Reading snapshot: s3://{S3_BUCKET}/{key}")
     obj = s3.get_object(Bucket=S3_BUCKET, Key=key)
@@ -178,9 +181,9 @@ def write_insight_to_supabase(user_id: int, insight: dict, snapshot_collected_at
         "snapshot_collected_at": snapshot_collected_at,
         "track_count":           track_count,
         "summary":               insight.get("summary"),
-        "top_performer_id":      insight.get("top_performer", {}).get("track_id"),
+        "top_performer_id":      None,
         "top_performer_title":   insight.get("top_performer", {}).get("title"),
-        "underperformer_id":     insight.get("underperformer", {}).get("track_id"),
+        "underperformer_id":     None,
         "underperformer_title":  insight.get("underperformer", {}).get("title"),
         "engagement_score":      insight.get("engagement_score"),
         "patterns":              insight.get("patterns", []),

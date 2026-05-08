@@ -181,7 +181,7 @@ export default function Dashboard() {
         @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes tooltipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes tooltipIn { from{opacity:0;transform:translateX(-50%) translateY(-4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
         @keyframes shimmer { 0%{opacity:0.4} 50%{opacity:0.8} 100%{opacity:0.4} }
         .agent-tooltip { display: none; }
         .agent-btn:hover .agent-tooltip { display: block; animation: tooltipIn 0.15s ease forwards; }
@@ -266,7 +266,7 @@ export default function Dashboard() {
                 <div style={{ fontSize: "0.68rem", color: "#8899b0", lineHeight: 1.3 }}>{agent.desc}</div>
                 {/* Tooltip */}
                 <div className="agent-tooltip" style={{
-                  position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
+                  position: "absolute", top: "calc(100% + 8px)", left: "50%",
                   transform: "translateX(-50%)",
                   width: "220px",
                   background: "#0d1625",
@@ -284,9 +284,9 @@ export default function Dashboard() {
                   <div style={{ color: agent.color, fontSize: "0.65rem", fontWeight: 600, marginBottom: "0.3rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>{agent.label} agent</div>
                   {agent.tooltip}
                   <div style={{
-                    position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)",
+                    position: "absolute", top: "-5px", left: "50%", transform: "translateX(-50%)",
                     width: "8px", height: "8px", background: "#0d1625",
-                    border: `1px solid ${agent.border}`, borderTop: "none", borderLeft: "none",
+                    border: `1px solid ${agent.border}`, borderBottom: "none", borderRight: "none",
                     rotate: "45deg",
                   }} />
                 </div>

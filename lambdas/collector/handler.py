@@ -313,6 +313,8 @@ def handler(event: dict, context) -> dict:
     token_preview = access_token[:20] if access_token else "EMPTY"
     logger.info(f"Token preview={token_preview} env={bool(os.environ.get('SC_OAUTH_TOKEN'))} ssm={bool(secrets.get('sc_oauth_token'))}")
     mode = "REAL" if use_real else "MOCK"
+    if not use_real:
+        logger.warning("⚠️  No SC_OAUTH_TOKEN found — running in MOCK mode. Set sc_oauth_token in SSM or SC_OAUTH_TOKEN env var to collect real data.")
     logger.info(f"Collector starting — mode={mode}, users={user_ids}")
 
     for user_id in user_ids:

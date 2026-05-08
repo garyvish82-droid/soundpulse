@@ -131,12 +131,12 @@ class SoundCloudClient:
 
     async def get_user(self, user_id: int) -> SCUser:
         """Fetch a user profile."""
-        data = await self._get("/me")
+        data = await self._get(f"/users/{user_id}")
         return SCUser(**data)
 
     async def get_user_tracks(self, user_id: int, limit: int = 50) -> list[SCTrack]:
         """Get all tracks uploaded by a user."""
-        data = await self._get("/me/tracks", {"limit": limit})
+        data = await self._get(f"/users/{user_id}/tracks", {"limit": limit})
         return [SCTrack(**t) for t in (data.get("collection") or data)]
 
     async def get_user_followers(self, user_id: int, limit: int = 200) -> list[SCUser]:

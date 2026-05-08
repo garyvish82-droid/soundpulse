@@ -12,6 +12,7 @@ const AGENTS = [
     bg: "rgba(99,102,241,0.08)",
     border: "rgba(99,102,241,0.3)",
     glow: "rgba(99,102,241,0.15)",
+    tooltip: "Reads your last 32 tracks from SoundCloud. Compares plays, likes, reposts and comments across your catalog. Claude identifies what\'s working, what\'s underperforming, and why — with specific numbers.",
   },
   {
     id: "get_strategy",
@@ -22,6 +23,7 @@ const AGENTS = [
     bg: "rgba(16,185,129,0.08)",
     border: "rgba(16,185,129,0.3)",
     glow: "rgba(16,185,129,0.15)",
+    tooltip: "Takes your latest insight report and builds a ranked 5-step action plan. Each action has a timeframe, expected impact, and rationale tied to your actual data. Ask with a goal like \"more reposts\" to get a focused plan.",
   },
   {
     id: "get_audience",
@@ -32,6 +34,7 @@ const AGENTS = [
     bg: "rgba(245,158,11,0.08)",
     border: "rgba(245,158,11,0.3)",
     glow: "rgba(245,158,11,0.15)",
+    tooltip: "Analyses your engagement score, like rate, and catalog patterns to profile your listener base. Tells you whether your audience is casual or loyal, and what your growth ceiling looks like based on current signals.",
   },
   {
     id: "get_alerts",
@@ -42,6 +45,7 @@ const AGENTS = [
     bg: "rgba(239,68,68,0.08)",
     border: "rgba(239,68,68,0.3)",
     glow: "rgba(239,68,68,0.15)",
+    tooltip: "Compares your two most recent SoundCloud snapshots (collected every 15 min). Flags any metric that spiked >15% or dropped >10% — plays, likes, reposts, or comments — and tells you exactly what to do about it.",
   },
 ];
 
@@ -174,6 +178,9 @@ export default function Dashboard() {
         @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes tooltipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        .agent-tooltip { display: none; }
+        .agent-btn:hover .agent-tooltip { display: block; animation: tooltipIn 0.15s ease forwards; }
       `}</style>
 
       {/* Header */}
@@ -219,6 +226,7 @@ export default function Dashboard() {
                 key={agent.id}
                 onClick={() => handleAgent(agent)}
                 disabled={loading}
+                className="agent-btn"
                 style={{
                   background: isActive ? agent.bg : "#131f35",
                   border: `1px solid ${isActive ? agent.border : "#1e293b"}`,
@@ -231,7 +239,7 @@ export default function Dashboard() {
                   boxShadow: isActive ? `0 0 20px ${agent.glow}` : "none",
                   opacity: loading && !isActive ? 0.5 : 1,
                   position: "relative",
-                  overflow: "hidden",
+                  overflow: "visible",
                 }}
                 onMouseEnter={(e) => {
                   if (!loading) {
@@ -255,6 +263,30 @@ export default function Dashboard() {
                 <div style={{ fontSize: "1.1rem", marginBottom: "0.4rem", color: agent.color }}>{agent.icon}</div>
                 <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#e2e8f0", marginBottom: "0.2rem" }}>{agent.label}</div>
                 <div style={{ fontSize: "0.68rem", color: "#64748b", lineHeight: 1.3 }}>{agent.desc}</div>
+                <div className="agent-tooltip" style={{
+                  position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "220px",
+                  background: "#0d1625",
+                  border: `1px solid ${agent.border}`,
+                  borderRadius: "8px",
+                  padding: "0.625rem 0.75rem",
+                  fontSize: "0.7rem",
+                  color: "#94a3b8",
+                  lineHeight: 1.55,
+                  zIndex: 50,
+                  pointerEvents: "none",
+                  boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px ${agent.border}`,
+                }}>
+                  <div style={{ color: agent.color, fontSize: "0.65rem", fontWeight: 600, marginBottom: "0.3rem", letterSpacing: "0.06em", textTransform: "uppercase" }}>{agent.label} agent</div>
+                  {agent.tooltip}
+                  <div style={{
+                    position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)",
+                    width: "8px", height: "8px", background: "#0d1625",
+                    border: `1px solid ${agent.border}`, borderTop: "none", borderLeft: "none",
+                    rotate: "45deg",
+                  }} />
+                </div>
                 {isActive && (
                   <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0, height: "2px",

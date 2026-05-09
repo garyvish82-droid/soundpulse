@@ -128,4 +128,4 @@ See [sprints/SPRINT_PLAN.md](sprints/SPRINT_PLAN.md) for the full 3-week build p
 
 *SoundPulse · Built with FastMCP · SoundCloud API · Supabase · AWS · soundpulse.me*
 ## Current status
-Currently on Week 7 — Phase: MCP Server — Last completed: All 4 MCP tools live and tested (get_insights, get_strategy, get_audience, get_alerts). Next: connect to Claude.ai for natural language queries.
+Currently on Week 9 — Phase: UX Tester Agent — Last completed: Full stack live at soundpulse.me. Landing page + dashboard deployed. MCP server on Railway. SSL pending (auto-provisions). Next: UX Tester Agent — simulates creator journeys, produces structured UX reports for SoundCloud pitch.

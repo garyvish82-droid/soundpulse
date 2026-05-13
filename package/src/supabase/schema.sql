@@ -130,3 +130,44 @@ CREATE TABLE IF NOT EXISTS ux_reports (
 
 CREATE INDEX IF NOT EXISTS idx_ux_reports_generated_at ON ux_reports(generated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_ux_reports_type ON ux_reports(report_type);
+
+
+-- ─── Grants & RLS ────────────────────────────────────────────────────────────
+-- Required from May 30 2026: new Supabase projects no longer auto-expose
+-- public schema tables to the Data API. Explicit GRANTs are mandatory.
+
+ALTER TABLE public.track_snapshots ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.track_snapshots TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.track_snapshots TO service_role;
+CREATE POLICY "Authenticated users can read track snapshots"
+  ON public.track_snapshots FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.retention_events ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.retention_events TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.retention_events TO service_role;
+CREATE POLICY "Authenticated users can read retention events"
+  ON public.retention_events FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.search_sessions ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.search_sessions TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.search_sessions TO service_role;
+CREATE POLICY "Authenticated users can read search sessions"
+  ON public.search_sessions FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.user_sessions TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_sessions TO service_role;
+CREATE POLICY "Authenticated users can read user sessions"
+  ON public.user_sessions FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.creator_engagement ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.creator_engagement TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.creator_engagement TO service_role;
+CREATE POLICY "Authenticated users can read creator engagement"
+  ON public.creator_engagement FOR SELECT TO authenticated USING (true);
+
+ALTER TABLE public.ux_reports ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.ux_reports TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.ux_reports TO service_role;
+CREATE POLICY "Authenticated users can read UX reports"
+  ON public.ux_reports FOR SELECT TO authenticated USING (true);

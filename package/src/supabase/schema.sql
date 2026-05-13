@@ -132,9 +132,41 @@ CREATE INDEX IF NOT EXISTS idx_ux_reports_generated_at ON ux_reports(generated_a
 CREATE INDEX IF NOT EXISTS idx_ux_reports_type ON ux_reports(report_type);
 
 
+-- ─── AI Insights ────────────────────────────────────────────────────────────
+-- Stores Claude-generated insight, strategy, and anomaly reports per user.
+CREATE TABLE IF NOT EXISTS ai_insights (
+    id                      UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id                 TEXT NOT NULL,
+    agent_type              TEXT NOT NULL,          -- insight | strategy | anomaly
+    model                   TEXT,
+    snapshot_collected_at   TEXT,
+    track_count             INT DEFAULT 0,
+    summary                 TEXT,
+    top_performer_id        INT,
+    top_performer_title     TEXT,
+    underperformer_id       INT,
+    underperformer_title    TEXT,
+    engagement_score        FLOAT,
+    patterns                JSONB,
+    recommendations         JSONB,
+    raw_json                JSONB,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_insights_user_id ON ai_insights(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_insights_agent_type ON ai_insights(agent_type);
+CREATE INDEX IF NOT EXISTS idx_ai_insights_created_at ON ai_insights(created_at DESC);
+
+
 -- ─── Grants & RLS ────────────────────────────────────────────────────────────
 -- Required from May 30 2026: new Supabase projects no longer auto-expose
 -- public schema tables to the Data API. Explicit GRANTs are mandatory.
+
+ALTER TABLE public.ai_insights ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.ai_insights TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.ai_insights TO service_role;
+CREATE POLICY "Authenticated users can read ai insights"
+  ON public.ai_insights FOR SELECT TO authenticated USING (true);
 
 ALTER TABLE public.track_snapshots ENABLE ROW LEVEL SECURITY;
 GRANT SELECT ON public.track_snapshots TO authenticated;

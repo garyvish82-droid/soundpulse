@@ -1,4 +1,4 @@
-# SoundPulse — UX Intelligence for SoundCloud
+# AI-powered SoundCloud workflow experimentation platform using MCP architecture
 
 > **An agentic analytics platform that gives AI agents real-time access to SoundCloud usage data and generates actionable UX insights.**
 >

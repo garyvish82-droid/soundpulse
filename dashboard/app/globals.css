@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #07090f;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
@@ -10,17 +10,88 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+  --font-display: var(--font-playfair);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* SoundPulse design tokens — single source of truth for both
+     the dashboard and the marketing page. */
+  --color-bg: #07090f;
+  --color-surface: #11192a;
+  --color-surface-inset: #0c1320;
+  --color-border: #1e2a3f;
+  --color-border-strong: #2c3e5c;
+
+  --color-text: #f1f5f9;
+  --color-text-muted: #9aa8bf;
+  --color-text-faint: #7282a0;
+
+  --color-brand: #3b82f6;
+  --color-brand-strong: #2563eb;
+  --color-brand-2: #6366f1;
+
+  --color-agent-insights: #6366f1;
+  --color-agent-strategy: #10b981;
+  --color-agent-audience: #f59e0b;
+  --color-agent-alerts: #ef4444;
+
+  --color-success: #10b981;
+  --color-danger: #ef4444;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+@keyframes bounce-dot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes flow-dash {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+.animate-bounce-dot { animation: bounce-dot 0.8s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.5s ease-out forwards; }
+.animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+.arch-line { animation: flow-dash 1.2s linear infinite; }
+
+/* Respect reduced-motion preference across every custom animation above. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

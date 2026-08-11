@@ -26,7 +26,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "SoundPulse",
-  description: "AI-native analytics for SoundCloud creators.",
+  description:
+    "A production-grade agentic analytics system — an MCP server on live AWS infrastructure, built solo by a product manager to demonstrate agentic-systems fluency and shipping real infrastructure with AI.",
 };
 
 export default function RootLayout({

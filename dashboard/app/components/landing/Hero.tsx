@@ -20,17 +20,18 @@ export default function Hero() {
         className="animate-fade-up mb-6 max-w-3xl font-display text-[clamp(2.5rem,7vw,5rem)] font-bold leading-[1.1] tracking-tight text-text"
         style={{ animationDelay: "0.15s" }}
       >
-        SoundCloud analytics,
+        I built a deployed agentic system —
         <br />
-        <em className="text-brand">reimagined</em> for the AI era.
+        <em className="text-brand">end to end, solo, with AI.</em>
       </h1>
 
       <p
-        className="animate-fade-up mb-10 max-w-[520px] text-[1.05rem] leading-[1.7] text-text-muted"
+        className="animate-fade-up mb-10 max-w-[560px] text-[1.05rem] leading-[1.7] text-text-muted"
         style={{ animationDelay: "0.3s" }}
       >
-        SoundPulse is an AI-native intelligence layer for SoundCloud creators. Not a dashboard — a reasoning
-        engine that understands your music.
+        SoundPulse is an MCP server on live AWS infrastructure that lets an AI agent answer product questions
+        about SoundCloud data in natural language. Built by a product manager to show agentic-systems fluency
+        and the ability to ship real infrastructure without an engineering team.
       </p>
 
       <div
@@ -55,6 +56,14 @@ export default function Hero() {
         <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-dot" />
         <span className="font-mono text-[0.72rem] text-text-faint">Live on SoundCloud data · Powered by Claude</span>
       </div>
+
+      <p
+        className="animate-fade-up mt-6 max-w-[480px] text-center text-[0.78rem] leading-[1.6] text-text-faint"
+        style={{ animationDelay: "0.6s" }}
+      >
+        Live mode uses real SoundCloud engagement metrics. Behavioral analyses — retention, discovery, session
+        depth — run on clearly-labeled synthetic data, because the public API doesn&apos;t expose those signals.
+      </p>
     </section>
   );
 }

@@ -5,11 +5,11 @@ export default function HowItWorks() {
     <section id="how" className="mx-auto max-w-[900px] px-5 py-20 sm:px-8">
       <p className="mb-4 text-center font-mono text-[0.7rem] tracking-[0.12em] text-brand">HOW IT WORKS</p>
       <h2 className="mb-3 text-center font-display text-[2rem] font-bold text-text">
-        Four agents. One question away.
+        One question. The right tool. A plain-English answer.
       </h2>
       <p className="mx-auto mb-12 max-w-[480px] text-center text-[0.9rem] text-text-muted">
-        Ask anything. Claude routes your question to the right agent, pulls real data, and responds in plain
-        English.
+        Ask anything. SoundPulse routes your question to the right tool, pulls the relevant data, and answers
+        in plain English — no dashboards to read.
       </p>
 
       <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
@@ -21,6 +21,12 @@ export default function HowItWorks() {
               className="rounded-xl border border-border bg-surface-inset p-6 transition-all duration-200 hover:-translate-y-0.5"
               style={{ borderTopColor: `color-mix(in srgb, ${agent.color} 45%, transparent)`, borderTopWidth: 2 }}
             >
+              <p
+                className="mb-3 font-mono text-[0.6rem] tracking-[0.1em]"
+                style={{ color: agent.color }}
+              >
+                {agent.provenance}
+              </p>
               <div className="mb-3" style={{ color: agent.color }}>
                 <Icon size={22} />
               </div>
@@ -37,8 +43,7 @@ export default function HowItWorks() {
         </span>
         <p className="text-[0.8rem] leading-relaxed text-text-faint">
           Built as a <strong className="text-text-muted">Model Context Protocol server</strong> — meaning any AI
-          agent (Claude, GPT, Cursor) can call SoundPulse directly. It&apos;s not just a product. It&apos;s an
-          intelligence layer.
+          agent (Claude, GPT, Cursor) can call SoundPulse directly.
         </p>
       </div>
     </section>

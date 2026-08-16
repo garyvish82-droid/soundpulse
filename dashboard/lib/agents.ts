@@ -9,6 +9,7 @@ export type Agent = {
   desc: string;
   tooltip: string;
   loading: string;
+  provenance: string;
   /** Tailwind color tokens (see app/globals.css @theme) shared across dashboard + landing. */
   color: string;
   icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
@@ -21,6 +22,7 @@ export const AGENTS: Agent[] = [
     id: "get_insights",
     label: "Insights",
     desc: "Find out what's actually working",
+    provenance: "LIVE DATA",
     color: "var(--color-agent-insights)",
     icon: InsightsIcon,
     tooltip:
@@ -31,6 +33,7 @@ export const AGENTS: Agent[] = [
     id: "get_strategy",
     label: "Strategy",
     desc: "Get a ranked to-do list for this week",
+    provenance: "BUILT ON INSIGHTS",
     color: "var(--color-agent-strategy)",
     icon: StrategyIcon,
     tooltip:
@@ -41,20 +44,22 @@ export const AGENTS: Agent[] = [
     id: "get_audience",
     label: "Audience",
     desc: "Understand who's listening and why",
+    provenance: "DEMO DATA",
     color: "var(--color-agent-audience)",
     icon: AudienceIcon,
     tooltip:
-      "Analyses your engagement score, like rate, and catalog patterns to profile your listener base. Tells you whether your audience is casual or loyal, and what your growth ceiling looks like based on current signals.",
+      "Profiles your listener base — casual vs. loyal, and where your growth ceiling sits based on retention and session depth. SoundCloud's public API doesn't expose these behavioral signals, so this view runs on clearly-labeled demo data.",
     loading: "Analysing your listener patterns...",
   },
   {
     id: "get_alerts",
     label: "Alerts",
     desc: "See what changed since yesterday",
+    provenance: "LIVE DATA · SCHEDULED",
     color: "var(--color-agent-alerts)",
     icon: AlertsIcon,
     tooltip:
-      "Compares your two most recent SoundCloud snapshots (collected every 15 min). Flags any metric that spiked >15% or dropped >10% — plays, likes, reposts, or comments — and tells you exactly what to do about it.",
+      "A scheduled job that compares your two most recent snapshots and flags any metric that moved sharply — up >15% or down >10% — then tells you what to do about it.",
     loading: "Scanning for spikes and drops across your tracks...",
   },
 ];

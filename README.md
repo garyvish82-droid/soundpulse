@@ -4,7 +4,7 @@ production-grade agentic analytics system — architected, built, and deployed s
 
 SoundPulse is an MCP server that exposes a suite of analytical tools to any MCP-compatible AI client (Claude Desktop, etc.). A stakeholder asks a question in natural language — "Where are we losing listeners on hip-hop tracks?" — and the agent selects the right tools, reasons over the results, and returns structured UX recommendations plus an exportable report.
 
-It runs on real infrastructure: FastMCP, Postgres (Supabase), Docker, and AWS Fargate, live behind a real domain with SSL.
+It runs on real infrastructure: a Next.js frontend on Vercel, a containerized FastMCP backend (Docker) on Railway, a scheduled AWS Lambda that ingests SoundCloud data into Postgres, and Supabase — live behind a real domain with SSL..
 
 What this project is — and isn't. SoundPulse demonstrates that a non-engineer PM can architect and ship a complete, deployed agentic system end to end. It is not a live analytics product with a user base, and it does not claim to be. That distinction is deliberate and is reflected honestly throughout this repo — see Data provenance below.
 
@@ -43,7 +43,7 @@ Stakeholder (Browser) ──► demo/index.html
               SoundCloud   Supabase  Analysis
                API v1     (Postgres)  Engine
 
-Stack: Python · FastMCP (stdio + HTTP transports) · Supabase (PostgreSQL) · SoundCloud API v1 · Docker · AWS Fargate
+Stack: Stack: Python · FastMCP (stdio + HTTP transports) · Supabase (PostgreSQL) · SoundCloud API v1 · Docker · Railway (backend) · Vercel (frontend) · AWS Lambda (scheduled ingestion)
 
 Running it
 
@@ -81,16 +81,23 @@ python main.py --transport http --port 8080 # remote (web clients)
 
 Open demo/index.html in your browser. Works in demo mode immediately.
 
-Deployment (AWS)
-bash
-export AWS_REGION=us-east-1
-export AWS_ECR_REPO=soundpulse
-bash deploy/aws/deploy.sh
+## Deployment
 
-Or locally with Docker Compose:
+SoundPulse runs across three targets, each matched to its job:
 
-bash
+- **Frontend (Next.js)** — deployed on Vercel.
+- **MCP backend (FastMCP, containerized with Docker)** — deployed on Railway.
+- - **Ingestion** — the `soundpulse-collector` AWS Lambda (Python 3.12),
+  packaged as a zip, invoked every 15 minutes by an EventBridge schedule
+  (`rate(15 minutes)`) to pull SoundCloud metrics into Supabase.
+
+### Local development
+
+Run the MCP server and dependencies locally with Docker Compose:
+
+```bash
 docker-compose -f deploy/docker-compose.yml up
+```
 Why I built it
 
 I'm a product manager with 12+ years across platform, content, and AdTech. I built SoundPulse to show three things by doing them, rather than describing them:
